@@ -29,6 +29,11 @@ jobs:
           echo "MYSQL_USER=insurance_user" >> .env
           echo "MYSQL_PASSWORD=insurance123" >> .env
 
+         - name: Show Repository Files
+          run: |
+          pwd
+          ls -R
+
       # 4. Build Images
       - name: Build Docker Images
         run: docker compose build
