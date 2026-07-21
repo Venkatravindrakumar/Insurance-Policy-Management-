@@ -1,0 +1,91 @@
+name: Insurance Policy Management CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-push:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Code Checkout
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # 2. Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. Build Frontend Docker Image
+      - name: Build Frontend Docker Image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/insurance-policy-management-web:latest \
+            ./frontend
+
+      # 4. Build Backend Docker Image
+      - name: Build Backend Docker Image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/insurance-policy-management-app:latest \
+            ./backend
+
+      # 5. Create Environment File
+      - name: Create Environment File
+        run: |
+          echo "MYSQL_ROOT_PASSWORD=root123" > .env
+          echo "MYSQL_DATABASE=insurance_db" >> .env
+          echo "MYSQL_USER=insurance_user" >> .env
+          echo "MYSQL_PASSWORD=insurance123" >> .env
+
+      # 6. Run Docker Compose Containers
+      - name: Run Insurance Application
+        run: |
+          docker compose up -d
+
+      # 7. Check Running Containers
+      - name: Check Container Status
+        run: |
+          docker compose ps
+
+      # 8. Wait for Application
+      - name: Wait for Application
+        run: |
+          sleep 20
+
+      # 9. Test Application
+      - name: Test Insurance Application
+        run: |
+          curl --fail http://localhost
+          curl --fail http://localhost/api/policies
+
+      # 10. Show Container Logs
+      - name: Show Container Logs
+        if: always()
+        run: |
+          docker compose logs
+
+      # 11. Push Frontend Image to Docker Hub
+      - name: Push Frontend Image
+        run: |
+          docker push \
+            ${{ secrets.DOCKER_USERNAME }}/insurance-policy-management-web:latest
+
+      # 12. Push Backend Image to Docker Hub
+      - name: Push Backend Image
+        run: |
+          docker push \
+            ${{ secrets.DOCKER_USERNAME }}/insurance-policy-management-app:latest
+
+      # 13. Stop Containers
+      - name: Stop Containers
+        if: always()
+        run: |
+          docker compose down
