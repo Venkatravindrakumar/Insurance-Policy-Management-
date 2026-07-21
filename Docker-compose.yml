@@ -1,0 +1,47 @@
+services:
+
+  web:
+    build: ./frontend
+    container_name: insurance-web
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - insurance-network
+
+  app:
+    build: ./backend
+    container_name: insurance-app
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+    depends_on:
+      - db
+    networks:
+      - insurance-network
+
+  db:
+    image: mysql:8.0
+    container_name: insurance-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - insurance-network
+
+networks:
+  insurance-network:
+
+volumes:
+  mysql_data:

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Insurance Policy Management</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🏦 Insurance Policy Management</h1>
+
+        <p class="subtitle">
+            Docker Compose Multi-Container Application
+        </p>
+
+        <button onclick="loadPolicies()">
+            Load Policies
+        </button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Policy Number</th>
+                    <th>Customer Name</th>
+                    <th>Policy Type</th>
+                    <th>Premium</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="policyTable">
+            </tbody>
+        </table>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
